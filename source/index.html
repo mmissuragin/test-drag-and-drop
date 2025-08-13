@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Название проекта</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="preload" href="#" type="font/woff2" as="font">
+    <link rel="stylesheet" href="styles/styles.css">
+    <script src="scripts/index.js" defer></script>
+  </head>
+<body>
+  <main class="main">
+    <section id="Flexbox">
+      <div class="BlockLayout">
+        <div id="block1" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 1</div>
+        <div id="block2" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 2</div>
+        <div id="block3" class="Block" style="padding: 10px; border: 1px solid #000;">Block 3</div>
+        <div id="block4" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 4</div>
+        <div id="block5" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 5</div>
+        <div id="block6" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 6</div>
+        <div id="block7" class="Block Block--isDraggable" style="padding: 10px; border: 1px solid #000;">Block 7</div>
+      </div>
+    </section>
+  </main>
+<script type="module">
+  import { Swappable, Plugins } from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/index.mjs';
+
+  const container = document.querySelector('#Flexbox .BlockLayout');
+
+  // Функция для сохранения порядка блоков в localStorage
+  function saveOrder() {
+    const order = Array.from(container.children).map(block => block.id);
+    localStorage.setItem('blockOrder', JSON.stringify(order));
+  }
+
+  // Функция для загрузки и восстановления порядка блоков из localStorage
+  function loadOrder() {
+    const savedOrder = JSON.parse(localStorage.getItem('blockOrder'));
+    if (savedOrder && savedOrder.length) {
+      savedOrder.forEach(id => {
+        const block = document.getElementById(id);
+        if (block) container.appendChild(block);
+      });
+    }
+  }
+
+  // При загрузке страницы восстанавливаем порядок блоков
+  loadOrder();
+
+  const swappable = new Swappable([container], {
+    draggable: '.Block--isDraggable',
+    mirror: {
+      constrainDimensions: true,
+    },
+    plugins: [Plugins.ResizeMirror],
+  });
+
+  // При каждом swap сохраняем порядок
+  swappable.on('swappable:swapped', () => {
+    saveOrder();
+  });
+</script>
+
+
+</body>
+</html>
